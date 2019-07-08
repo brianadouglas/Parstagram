@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LargeBlueButton">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@color/blue_5</item>
+        <item name="android:padding">@dimen/row_text_padding</item>
+        <item name="android:minHeight">@dimen/row_height_small</item>
+    </style>
+    <style name="LargeGreenButton">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@color/green_5</item>
+        <item name="android:padding">@dimen/row_text_padding</item>
+        <item name="android:minHeight">@dimen/row_height_small</item>
+    </style>
+</resources>
