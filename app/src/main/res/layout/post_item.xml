@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="110px"
+        android:layout_height="110px"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        app:srcCompat="@drawable/instagram_user_filled_24" />
+
+    <TextView
+        android:id="@+id/ivUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/ivAvatar"
+        android:text="TextView" />
+
+    <ImageView
+        android:id="@+id/ivPost"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@id/ivAvatar"
+        app:srcCompat="@android:color/black" />
+
+    <ImageButton
+        android:id="@+id/btnHeart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ivPost"
+        app:srcCompat="@drawable/ufi_heart_icon" />
+
+    <ImageButton
+        android:id="@+id/btnComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivPost"
+        android:layout_toRightOf="@+id/btnHeart"
+        app:srcCompat="@drawable/ic_ufi_comment" />
+
+    <ImageButton
+        android:id="@+id/btnDirect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivPost"
+        android:layout_toRightOf="@+id/btnComment"
+        app:srcCompat="@drawable/ic_direct" />
+
+    <ImageButton
+        android:id="@+id/btnSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivPost"
+        android:layout_alignParentEnd="true"
+        app:srcCompat="@drawable/ufi_save_icon" />
+</RelativeLayout>

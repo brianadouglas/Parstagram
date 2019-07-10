@@ -1,8 +1,8 @@
 package com.example.parstagram;
 
-import android.content.SharedPreferences;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,7 +17,7 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
-public class MainActivity extends AppCompatActivity implements TextWatcher {
+public class LoginActivity extends AppCompatActivity implements TextWatcher {
 
     private final String TAG = "Main";
     EditText username; // username entered
@@ -25,14 +25,22 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     EditText email; // email address entered - only relevant for sign up
     Button loginBtn;
     Button signUpBtn;
-    public String persistUsername;
-    public String persistPassword;
-    boolean persisted = false;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
+        context = this;
+
+        // checking if the past user logged in has persisted through Parse
+        if (ParseUser.getCurrentUser() != null) {
+            // there is a user logged in from a previous session
+            // leads them to the Feed Activity
+            Intent intent = new Intent(this, FeedActivity.class);
+            this.startActivity(intent);
+            return; // ensures that the remainder of this activity does not run
+        }
 
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
@@ -46,14 +54,6 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         loginBtn = (Button) findViewById(R.id.logIn);
         signUpBtn = (Button) findViewById(R.id.create);
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        persistUsername = pref.getString("username", "n/a");
-        persistPassword = pref.getString("password", "n/a");
-
-        if (persistUsername != "n/a" && persistPassword != "n/a") {
-            persisted = true; // signifies that a username and password has been found from a previous session
-            login(findViewById(R.id.loginPage));
-        }
 
     }
 
@@ -61,17 +61,16 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     public void login (View v) {
 
         // in the case that a login has not persisted, pull from the EditText input
-        if (!persisted) {
-            persistUsername = username.getText().toString();
-            persistPassword = password.getText().toString();
-        }
 
-        ParseUser.logInInBackground(persistUsername, persistPassword, new LogInCallback() {
+        ParseUser.logInInBackground(username.getText().toString(), password.getText().toString(), new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
                     // Successful login
-                    Toast.makeText(MainActivity.this, "Successful login", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Successful login", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(context, FeedActivity.class);
+                    context.startActivity(intent);
+                    finish();
                 } else {
                     // Failure
                     Log.e(TAG, "Failed log in", e);
@@ -95,13 +94,18 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
                 if (e == null) {
                     // Successful login
                     // TODO: continue onto the relevant activity
-                    Toast.makeText(MainActivity.this, "Successful sign up", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Successful sign up", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(context, FeedActivity.class);
+                    context.startActivity(intent);
+                    finish();
                 } else {
                     // Unsuccessful - could remain on the main activity
                     Log.e(TAG, "Failed sign up", e);
                 }
             }
         });
+
+
     }
 
     public void logOut() {

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:id="@+id/loginPage"
-    tools:context=".MainActivity">
+    tools:context=".LoginActivity">
 
     <ImageView
         android:id="@+id/headline"
