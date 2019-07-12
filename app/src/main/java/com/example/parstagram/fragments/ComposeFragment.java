@@ -1,6 +1,8 @@
 package com.example.parstagram.fragments;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -28,23 +30,31 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.File;
+import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
 
 public class ComposeFragment extends Fragment {
+    // to access Parseuser object
+    public final static String KEY_PICTURE = "profilePicture";
 
     // member variables concerned with the camera activity
     public final String APP_TAG = "MyCustomApp";
     public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
     public String photoFileName = "photo.jpg";
     File photoFile;
+    // PICK_PHOTO_CODE is a constant integer
+    public final static int PICK_PHOTO_CODE = 1046;
+
 
     private final String TAG = "ComposeFragment";
 
     private EditText etCaption;
     private Button btnCapture;
+    private Button btnChoose;
     private ImageView ivImageTaken;
     private Button btnSubmit;
+    private Button btnProfile;
 
     // to create the View object hierarchy, either dynamically or XML layout inflation
     @Nullable
@@ -59,13 +69,36 @@ public class ComposeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         etCaption = (EditText) view.findViewById(R.id.etCaption);
         btnCapture = (Button) view.findViewById(R.id.btnCapture);
+        btnChoose = (Button) view.findViewById(R.id.btnChoose);
         ivImageTaken = (ImageView) view.findViewById(R.id.ivImageTaken);
         btnSubmit = (Button) view.findViewById(R.id.btnSubmit);
+        btnProfile = (Button) view.findViewById(R.id.btnProfile);
+
+        // allows the user to change their profile picture
+        btnProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // set the selected image as the user's profile picture
+                ParseUser user = ParseUser.getCurrentUser();
+                if (photoFile == null || ivImageTaken.getDrawable() == null) {
+                    Log.e(TAG, "No photo to submit");
+                    return;
+                }
+                saveProfileImage(user, photoFile);
+            }
+        });
 
         btnCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 launchCamera();
+            }
+        });
+
+        btnChoose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onPickPhoto(v);
             }
         });
 
@@ -85,27 +118,19 @@ public class ComposeFragment extends Fragment {
 
     }
 
-
-    // creating a post
-    public void createPost(String description, ParseFile imageFile, ParseUser user) {
-        // create and save a new post
-        final Post newPost = new Post();
-        newPost.setDescription(description);
-        newPost.setImage(imageFile);
-        newPost.setUser(user);
-        newPost.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    // saved
-                    Log.d("FeedActivity", "Create post success");
-                } else {
-                    e.printStackTrace();
-                }
-            }
-        });
+    // Trigger gallery selection for a photo
+    public void onPickPhoto(View view) {
+        // Create intent for picking a photo from the gallery
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
+        // So as long as the result is not null, it's safe to use the intent.
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            // Bring up gallery to select a photo
+            startActivityForResult(intent, PICK_PHOTO_CODE);
+        }
     }
-
+    
 
     // method to sane a post
     private void savePost(String description, ParseUser parseUser, File photoFile) {
@@ -129,6 +154,23 @@ public class ComposeFragment extends Fragment {
         });
     }
 
+    // function to set image to the user profile image
+    private void saveProfileImage(ParseUser parseUser, File photoFile) {
+        parseUser.put("profilePicture", new ParseFile(photoFile));
+        // save in background carried out to avoid using the main thread and must be done to update record in the Parse table
+        parseUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.d(TAG, "Profile pic not saved");
+                }
+            }
+        });
+        // the name of the field in the Parse database is profilePicture
+        etCaption.setText("");
+        ivImageTaken.setImageResource(0);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -140,8 +182,36 @@ public class ComposeFragment extends Fragment {
             } else { // Result was a failure
                 Toast.makeText(getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
             }
+        } else {
+            if (requestCode == PICK_PHOTO_CODE) {
+                Uri photoUri = data.getData();
+                photoFile = new File(getRealPathFromURI(getContext(), photoUri));
+                // Do something with the photo based on Uri
+                Bitmap selectedImage = null;
+                try {
+                    selectedImage = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), photoUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                // Load the selected image into a preview
+                ivImageTaken.setImageBitmap(selectedImage);
+            }
         }
     }
+
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }}
 
     private void launchCamera() {
         // create Intent to take the picture and return to the calling application

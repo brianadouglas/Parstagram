@@ -15,6 +15,7 @@
         android:layout_marginEnd="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
+        android:clickable="true"
         app:srcCompat="@drawable/instagram_user_filled_24" />
 
     <TextView
@@ -23,6 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/ivDAvatar"
         android:layout_toRightOf="@+id/ivDAvatar"
+        android:clickable="true"
         android:text="TextView" />
 
     <ImageView

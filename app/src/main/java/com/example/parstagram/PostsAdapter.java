@@ -8,6 +8,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,10 @@ import com.example.parstagram.fragments.PostDetailsFragment;
 import com.example.parstagram.model.Post;
 import com.parse.ParseFile;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
     // the list of posts to be displayed
@@ -55,21 +59,27 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         String sourceString = "<b>" + username + "</b>  " + post.getDescription();
         holder.tvCaption.setText(Html.fromHtml(sourceString));
 
+        // check if the user has a profilePicture on their account
+        ParseFile profile = post.getUser().getParseFile("profilePicture");
 
-        Glide.with(context).load(R.drawable.instagram_user_filled_24).asBitmap().centerCrop().into(new BitmapImageViewTarget(holder.ivAvatar) {
-            @Override
-            protected void setResource(Bitmap resource) {
-                RoundedBitmapDrawable circularBitmapDrawable =
-                        RoundedBitmapDrawableFactory.create(context.getResources(), resource);
-                circularBitmapDrawable.setCircular(true);
-                holder.ivAvatar.setImageDrawable(circularBitmapDrawable);
-            }
-        });
+        if (profile != null) {
+            Glide.with(context).load(profile.getUrl()).asBitmap().centerCrop().into(new BitmapImageViewTarget(holder.ivAvatar) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    holder.ivAvatar.setImageDrawable(circularBitmapDrawable);
+                }
+            });
+        }
+
         ParseFile image = post.getImage();
         if (image != null) {
 
             Glide.with(context).load(image.getUrl()).into(holder.ivPost);
         }
+        holder.tvTimeStampPost.setText(getRelativeTimeAgo(post.getCreatedAt().toString()));
 
     }
 
@@ -84,6 +94,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         TextView tvUsername;
         ImageView ivPost;
         TextView tvCaption;
+        TextView tvTimeStampPost;
 
 
         public ViewHolder(View itemView) {
@@ -94,6 +105,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             tvUsername = (TextView) itemView.findViewById(R.id.tvUsername);
             ivPost = (ImageView) itemView.findViewById(R.id.ivPost);
             tvCaption = (TextView) itemView.findViewById(R.id.tvCaption);
+            tvTimeStampPost = (TextView) itemView.findViewById(R.id.tvTimeStampPost);
             itemView.setOnClickListener(this);
         }
 
@@ -127,5 +139,22 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     public void addAll(List<Post> list) {
         mPosts.addAll(list);
         notifyDataSetChanged();
+    }
+
+    public String getRelativeTimeAgo(String rawJsonDate) {
+        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+        sf.setLenient(true);
+
+        String relativeDate = "";
+        try {
+            long dateMillis = sf.parse(rawJsonDate).getTime();
+            relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
+                    System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return relativeDate;
     }
 }

@@ -22,6 +22,12 @@
         android:id="@+id/btnCapture"
         android:text="Take picture"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnChoose"
+        android:text="Select picture"/>
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -32,6 +38,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/btnSubmit"
-        android:text="Submit!"/>
+        android:text="Post!"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnProfile"
+        android:text="Set as Profile Picture!"/>
 
 </LinearLayout>

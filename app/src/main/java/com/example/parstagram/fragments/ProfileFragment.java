@@ -24,6 +24,7 @@ import com.example.parstagram.R;
 import com.example.parstagram.model.Post;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -38,6 +39,7 @@ public class ProfileFragment extends Fragment {
     private ImageView ivProfilePicture;
     private TextView tvProfileUsername;
     protected List<Post> mPosts;
+    ParseUser user;
 
     @Nullable
     @Override
@@ -48,19 +50,39 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // the user will be null if one is not passed in and this reflects that the current user clicked on the profile button to view their own profile
+
+        if (user == null ) {
+
+            try {
+                user = ParseUser.getCurrentUser().fetch();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
         // load the profile image and username first
         ivProfilePicture = (ImageView) view.findViewById(R.id.ivProfilePicture);
         tvProfileUsername = (TextView) view.findViewById(R.id.tvProfileUsername);
 
-        Glide.with(getContext()).load(R.drawable.instagram_user_filled_24).asBitmap().centerCrop().into(new BitmapImageViewTarget(ivProfilePicture) {
-            @Override
-            protected void setResource(Bitmap resource) {
-                RoundedBitmapDrawable circularBitmapDrawable =
-                        RoundedBitmapDrawableFactory.create(getContext().getResources(), resource);
-                circularBitmapDrawable.setCircular(true);
-                ivProfilePicture.setImageDrawable(circularBitmapDrawable);
-            }
-        });
+        // check if the user has a profilePicture on their account
+        ParseFile profile = user.getParseFile("profilePicture");
+
+        if (profile != null) {
+            Glide.with(getContext())
+                    .load(profile.getUrl())
+                    .asBitmap().centerCrop()
+                    .into(new BitmapImageViewTarget(ivProfilePicture) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    ivProfilePicture.setImageDrawable(circularBitmapDrawable);
+                }
+            });
+        }
 
         tvProfileUsername.setText(ParseUser.getCurrentUser().getUsername());
 

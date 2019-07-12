@@ -68,16 +68,22 @@ public class PostDetailsFragment extends Fragment {
         String sourceString = "<b>" + username + "</b>  " + post.getDescription();
         tvDCaption.setText(Html.fromHtml(sourceString));
 
+        // check if the user has a profilePicture on their account
+        ParseFile profile = post.getUser().getParseFile("profilePicture");
 
-        Glide.with(this).load(R.drawable.instagram_user_filled_24).asBitmap().centerCrop().into(new BitmapImageViewTarget(ivDAvatar) {
-            @Override
-            protected void setResource(Bitmap resource) {
-                RoundedBitmapDrawable circularBitmapDrawable =
-                        RoundedBitmapDrawableFactory.create(getResources(), resource);
-                circularBitmapDrawable.setCircular(true);
-                ivDAvatar.setImageDrawable(circularBitmapDrawable);
-            }
-        });
+        if (profile != null) {
+            Glide.with(this).load(profile.getUrl()).asBitmap().centerCrop().into(new BitmapImageViewTarget(ivDAvatar) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    ivDAvatar.setImageDrawable(circularBitmapDrawable);
+                }
+            });
+        }
+
+
         ParseFile image = post.getImage();
         if (image != null) {
 
@@ -114,6 +120,8 @@ public class PostDetailsFragment extends Fragment {
 
         return relativeDate;
     }
+
+
 }
 
 
