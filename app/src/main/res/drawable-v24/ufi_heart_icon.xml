@@ -4,4 +4,5 @@
     <item android:state_pressed="true" android:drawable="@drawable/ic_ufi_heart_active"/>
     <item android:state_selected="true" android:drawable="@drawable/ic_ufi_heart_active"/>
     <item android:drawable="@drawable/ic_ufi_heart" />
+    <item android:state_enabled="true" android:drawable="@drawable/ic_ufi_heart_active"/>
 </selector>

@@ -4,4 +4,5 @@
     <item android:state_pressed="true" android:drawable="@drawable/ic_ufi_save_active" />
     <item android:state_selected="true" android:drawable="@drawable/ic_ufi_save_active" />
     <item android:drawable="@drawable/ic_ufi_save" />
+    <item android:state_enabled="true"  android:drawable="@drawable/ic_ufi_save_active" />
 </selector>

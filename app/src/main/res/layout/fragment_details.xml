@@ -3,12 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
+    android:layout_marginTop="?attr/actionBarSize"
     android:layout_height="wrap_content"
     android:layout_marginBottom="20dp">
 
 
     <ImageView
-        android:id="@+id/ivAvatar"
+        android:id="@+id/ivDAvatar"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="5dp"
@@ -17,57 +18,57 @@
         app:srcCompat="@drawable/instagram_user_filled_24" />
 
     <TextView
-        android:id="@+id/tvUsername"
+        android:id="@+id/tvDUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/ivAvatar"
-        android:layout_toRightOf="@+id/ivAvatar"
+        android:layout_toEndOf="@+id/ivDAvatar"
+        android:layout_toRightOf="@+id/ivDAvatar"
         android:text="TextView" />
 
     <ImageView
-        android:id="@+id/ivPost"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_below="@id/ivAvatar"
+        android:id="@+id/ivDPost"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        android:layout_below="@id/ivDAvatar"
         android:layout_marginBottom="5dp"
         app:srcCompat="@android:color/black" />
 
     <ImageButton
-        android:id="@+id/btnHeart"
+        android:id="@+id/btnDHeart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/ivPost"
+        android:layout_below="@id/ivDPost"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="10dp"
         android:background="@color/transparent"
         app:srcCompat="@drawable/ufi_heart_icon" />
 
     <ImageButton
-        android:id="@+id/btnComment"
+        android:id="@+id/btnDComment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ivPost"
+        android:layout_below="@+id/ivDPost"
         android:layout_marginRight="10dp"
-        android:layout_toEndOf="@+id/btnHeart"
-        android:layout_toRightOf="@+id/btnHeart"
+        android:layout_toEndOf="@+id/btnDHeart"
+        android:layout_toRightOf="@+id/btnDHeart"
         android:background="@color/transparent"
         app:srcCompat="@drawable/ic_ufi_comment" />
 
     <ImageButton
-        android:id="@+id/btnDirect"
+        android:id="@+id/btnDDirect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ivPost"
-        android:layout_toEndOf="@+id/btnComment"
-        android:layout_toRightOf="@+id/btnComment"
+        android:layout_below="@+id/ivDPost"
+        android:layout_toEndOf="@+id/btnDComment"
+        android:layout_toRightOf="@+id/btnDComment"
         android:background="@color/transparent"
         app:srcCompat="@drawable/ic_direct" />
 
     <ImageButton
-        android:id="@+id/btnSave"
+        android:id="@+id/btnDSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ivPost"
+        android:layout_below="@+id/ivDPost"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
@@ -75,10 +76,17 @@
         app:srcCompat="@drawable/ufi_save_icon" />
 
     <TextView
-        android:id="@+id/tvCaption"
+        android:id="@+id/tvDCaption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnHeart"
-        android:layout_alignLeft="@+id/btnHeart"
+        android:layout_below="@+id/btnDHeart"
+        android:layout_alignLeft="@+id/btnDHeart"
         android:layout_marginBottom="5dp" />
+
+    <TextView
+        android:id="@+id/tvTimeStamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvDCaption"
+        android:layout_alignLeft="@id/tvDCaption" />
 </RelativeLayout>
