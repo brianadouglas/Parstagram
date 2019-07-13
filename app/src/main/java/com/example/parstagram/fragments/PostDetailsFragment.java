@@ -20,6 +20,7 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.example.parstagram.R;
 import com.example.parstagram.model.Post;
 import com.parse.ParseFile;
+import com.parse.ParseUser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -57,8 +58,20 @@ public class PostDetailsFragment extends Fragment {
         tvDCaption = view.findViewById(R.id.tvDCaption);
         tvTimeStamp = view.findViewById(R.id.tvTimeStamp);
 
-        // unwrap the post object from the parcel
+        // on click listeners to get to the profile fragment
+        ivDAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                profileClick(post.getUser());
+            }
+        });
 
+        tvDUsername.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                profileClick(post.getUser());
+            }
+        });
 
         // populate the views according to this data
         String username = post.getUser().getUsername();
@@ -93,6 +106,16 @@ public class PostDetailsFragment extends Fragment {
         Date timeStamp = post.getCreatedAt();
         //create a date string.
         tvTimeStamp.setText(getRelativeTimeAgo(timeStamp.toString()));
+    }
+
+    public void profileClick (ParseUser user) {
+        //Put the value
+        ProfileFragment ldf = new ProfileFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("user", user);
+        ldf.setArguments(args);
+        //Inflate the fragment
+        getFragmentManager().beginTransaction().replace(R.id.flContainer, ldf).commit();
     }
 
     // to accept the relevant post as an argument from either the posts or profile fragment

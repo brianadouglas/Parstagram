@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.example.parstagram.fragments.PostDetailsFragment;
+import com.example.parstagram.fragments.ProfileFragment;
 import com.example.parstagram.model.Post;
 import com.parse.ParseFile;
 
@@ -83,51 +84,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     }
 
-    @Override
-    public int getItemCount() {
-        return mPosts.size();
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
-        ImageView ivAvatar;
-        TextView tvUsername;
-        ImageView ivPost;
-        TextView tvCaption;
-        TextView tvTimeStampPost;
-
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-
-            // view lookups
-            ivAvatar = (ImageView) itemView.findViewById(R.id.ivAvatar);
-            tvUsername = (TextView) itemView.findViewById(R.id.tvUsername);
-            ivPost = (ImageView) itemView.findViewById(R.id.ivPost);
-            tvCaption = (TextView) itemView.findViewById(R.id.tvCaption);
-            tvTimeStampPost = (TextView) itemView.findViewById(R.id.tvTimeStampPost);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            // go to the Post Details View with clicking on a single post
-            int position = getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) {
-                Post post = mPosts.get(position);
-
-                // cast the context of the parent activity
-                FeedActivity activity = (FeedActivity)context;
-                // start the fragment transaction
-                FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
-                // creating a new instance of the details fragment and passing the post as the attribute
-                PostDetailsFragment detailsFragment = PostDetailsFragment.newInstance(post);
-                // change the container to the details fragment and add commit
-                fragmentTransaction.replace(R.id.flContainer, detailsFragment).commit();
-            }
-        }
-    }
-
     // Methods used for pull to refresh feature
     // Clear all the elements from the recycler
     public void clear() {
@@ -156,5 +112,83 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         }
 
         return relativeDate;
+    }
+
+    @Override
+    public int getItemCount() {
+        return mPosts.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        ImageView ivAvatar;
+        TextView tvUsername;
+        ImageView ivPost;
+        TextView tvCaption;
+        TextView tvTimeStampPost;
+
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            // view lookups
+            ivAvatar = (ImageView) itemView.findViewById(R.id.ivAvatar);
+            tvUsername = (TextView) itemView.findViewById(R.id.tvUsername);
+            ivPost = (ImageView) itemView.findViewById(R.id.ivPost);
+            tvCaption = (TextView) itemView.findViewById(R.id.tvCaption);
+            tvTimeStampPost = (TextView) itemView.findViewById(R.id.tvTimeStampPost);
+            itemView.setOnClickListener(this);
+
+            ivAvatar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    profileOnClick();
+                }
+            });
+
+            tvUsername.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    profileOnClick();
+                }
+            });
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            // go to the Post Details View with clicking on a single post
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                Post post = mPosts.get(position);
+
+                // cast the context of the parent activity
+                FeedActivity activity = (FeedActivity) context;
+                // start the fragment transaction
+                FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
+                // creating a new instance of the details fragment and passing the post as the attribute
+                PostDetailsFragment detailsFragment = PostDetailsFragment.newInstance(post);
+                // change the container to the details fragment and add commit
+                fragmentTransaction.replace(R.id.flContainer, detailsFragment).commit();
+            }
+        }
+
+        public void profileOnClick() {
+            // go to the Profile Fragment when clicking on the profile image or the username with a post
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                Post post = mPosts.get(position);
+
+                // cast the context of the parent activity
+                FeedActivity activity = (FeedActivity) context;
+                // start the fragment transaction
+                FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
+                // creating a new instance of the details fragment and passing the post as the attribute
+                ProfileFragment profileFragment = ProfileFragment.newInstance(post.getUser());
+                // change the container to the details fragment and add commit
+                fragmentTransaction.replace(R.id.flContainer, profileFragment).commit();
+            }
+        }
+
     }
 }

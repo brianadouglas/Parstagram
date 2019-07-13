@@ -41,9 +41,24 @@ public class ProfileFragment extends Fragment {
     protected List<Post> mPosts;
     ParseUser user;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Retrieve the Parcelable object if one was passed
+
+        if (this.getArguments() != null ) {
+            user = this.getArguments().getParcelable("user");
+        }
+
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (this.getArguments() != null ) {
+            user = this.getArguments().getParcelable("user");
+        }
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
@@ -84,7 +99,7 @@ public class ProfileFragment extends Fragment {
             });
         }
 
-        tvProfileUsername.setText(ParseUser.getCurrentUser().getUsername());
+        tvProfileUsername.setText(user.getUsername());
 
 
         rvPostsGrid = view.findViewById(R.id.rvPostsGrid); // reference to the recycler view
@@ -101,13 +116,22 @@ public class ProfileFragment extends Fragment {
         queryPosts();
     }
 
+    // to accept the relevant user as an argument from either the posts or details fragment
+    public static ProfileFragment newInstance(ParseUser user) {
+        ProfileFragment profileFragment = new ProfileFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("user", user);
+        profileFragment.setArguments(args);
+        return profileFragment;
+    }
+
 
     private void queryPosts() {
         ParseQuery<Post> postQuery = new ParseQuery<Post>(Post.class);
         postQuery.include(Post.KEY_USER);
         postQuery.setLimit(20); // returns only the first 20 posts
         // to filter the posts to show only those made by the signed-in user
-        postQuery.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
+        postQuery.whereEqualTo(Post.KEY_USER, user);
         postQuery.addDescendingOrder(Post.KEY_CREATED); // order chronologically
         postQuery.findInBackground(new FindCallback<Post>() {
             @Override

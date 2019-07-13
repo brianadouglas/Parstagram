@@ -130,7 +130,7 @@ public class ComposeFragment extends Fragment {
             startActivityForResult(intent, PICK_PHOTO_CODE);
         }
     }
-    
+
 
     // method to sane a post
     private void savePost(String description, ParseUser parseUser, File photoFile) {

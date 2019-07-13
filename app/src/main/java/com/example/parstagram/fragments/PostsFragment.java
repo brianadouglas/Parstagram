@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.parstagram.EndlessRecyclerViewScrollListener;
 import com.example.parstagram.PostsAdapter;
 import com.example.parstagram.R;
 import com.example.parstagram.model.Post;
@@ -29,6 +30,8 @@ public class PostsFragment extends Fragment {
     protected PostsAdapter adapter;
     protected List<Post> mPosts;
     SwipeRefreshLayout swipeContainer;
+    // Store a member variable for the listener
+    private EndlessRecyclerViewScrollListener scrollListener;
 
 
     // onCreateView to inflate the view
@@ -49,7 +52,19 @@ public class PostsFragment extends Fragment {
         // set the adapter on the recycler view
         rvPostsGrid.setAdapter(adapter);
         // set the layout manager on the recycler view
-        rvPostsGrid.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        rvPostsGrid.setLayoutManager(linearLayoutManager);
+
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                queryMorePosts();
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        rvPostsGrid.addOnScrollListener(scrollListener);
 
         // initializing the refresh function
 
@@ -102,4 +117,31 @@ public class PostsFragment extends Fragment {
             }
         });
     }
-}
+
+    // to query the posts after the user gets to the end of the page
+    protected void queryMorePosts() {
+            ParseQuery<Post> postQuery = new ParseQuery<Post>(Post.class);
+            postQuery.include(Post.KEY_USER);
+            postQuery.whereLessThan("createdAt", mPosts.get(mPosts.size()-1).getCreatedAt());
+            postQuery.setLimit(20); // returns only the first 20 posts
+            postQuery.addDescendingOrder(Post.KEY_CREATED); // order chronologically
+            postQuery.findInBackground(new FindCallback<Post>() {
+                @Override
+                public void done(List<Post> posts, ParseException e) {
+                    if (e != null) {
+                        Log.e(TAG, "Error with query");
+                        e.printStackTrace();
+                        return;
+                    }
+                    mPosts.addAll(posts);
+                    adapter.notifyDataSetChanged();
+                    for (int i = 0; i < posts.size(); i++) {
+                        Post post = posts.get(i);
+                        Log.d(TAG, String.format("Post: %s from %s", post.getDescription(), post.getUser().getUsername()));
+                    }
+                }
+            });
+        }
+
+    }
+
