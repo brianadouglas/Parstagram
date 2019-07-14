@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.parstagram.FeedActivity;
 import com.example.parstagram.R;
 import com.example.parstagram.model.Post;
 import com.parse.ParseException;
@@ -55,6 +56,7 @@ public class ComposeFragment extends Fragment {
     private ImageView ivImageTaken;
     private Button btnSubmit;
     private Button btnProfile;
+
 
     // to create the View object hierarchy, either dynamically or XML layout inflation
     @Nullable
@@ -134,10 +136,10 @@ public class ComposeFragment extends Fragment {
 
     // method to sane a post
     private void savePost(String description, ParseUser parseUser, File photoFile) {
+        ((FeedActivity)getActivity()).showProgressBar();
         Post post = new Post();
         post.setDescription(description);
         post.setUser(parseUser);
-        // TODO: set the image
         post.setImage(new ParseFile(photoFile));
         post.saveInBackground(new SaveCallback() {
             @Override
@@ -147,6 +149,7 @@ public class ComposeFragment extends Fragment {
                     e.printStackTrace();
                     return;
                 }
+                ((FeedActivity)getActivity()).hideProgressBar();
                 Log.d(TAG, "Success!!");
                 etCaption.setText("");
                 ivImageTaken.setImageResource(0);
@@ -247,4 +250,5 @@ public class ComposeFragment extends Fragment {
 
         return file;
     }
+
 }

@@ -30,7 +30,7 @@ import java.util.List;
 
 public class FeedActivity extends AppCompatActivity {
 
-    //TODO: define the fields for the elements in the views
+
     private BottomNavigationView bottomNavigationView;
     //protected EndlessRecyclerViewScroller scrollListener;
 
@@ -43,6 +43,8 @@ public class FeedActivity extends AppCompatActivity {
     ArrayList<Post> posts;
     RecyclerView rvPosts;
     LinearLayoutManager linearLayoutManager;
+
+    MenuItem progressItem;
 
 
     @Override
@@ -67,9 +69,6 @@ public class FeedActivity extends AppCompatActivity {
 
         // loadTopPosts(); // load the top 20 posts
 
-        // TODO: onClick listener definition to get the attributes for the new post being created
-
-        //TODO: Navigation items listener
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -99,12 +98,30 @@ public class FeedActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.home);
     }
 
-    // Menu icons are inflated just as they were with actionbar
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        progressItem = menu.findItem(R.id.miActionProgress);
+        // Return to finish
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        // this is how the compose item in the ActionBar comes up
         getMenuInflater().inflate(R.menu.menu_feed, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        ParseUser.logOut();
+        Intent intent = new Intent(this, LoginActivity.class);
+        this.startActivity(intent); // return to the Login Activity
+        return super.onOptionsItemSelected(item);
     }
 
     // first thing done when the feed loads
@@ -126,11 +143,16 @@ public class FeedActivity extends AppCompatActivity {
         });
     }
 
-    public void logOut() {
-        ParseUser.logOut();
-        Intent intent = new Intent(this, LoginActivity.class);
-        this.startActivity(intent); // returns to the Log in Activity
-        return; // prevents being able to come back to this activity through builtin Android back button
+    public void showProgressBar() {
+        // Show progress item
+        if (progressItem != null) {
+            progressItem.setVisible(true);
+        }
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        progressItem.setVisible(false);
     }
 
 }
