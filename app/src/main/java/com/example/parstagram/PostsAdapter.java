@@ -129,8 +129,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             holder.tvComments.setVisibility(View.VISIBLE);
             for (int index = 0; index < comments.names().length(); index++) {
                 try {
-                    commentSource = "<b>" + comments.names().getString(index) + "<b> " + comments.getString(comments.names().getString(index));
-                    holder.tvComments.setText(commentSource);
+                    commentSource = "<b>" + comments.names().getString(index) + "</b> " + comments.getString(comments.names().getString(index)) + "\n";
+                    holder.tvComments.setText(Html.fromHtml(commentSource));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

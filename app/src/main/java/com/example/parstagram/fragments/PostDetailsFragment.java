@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.text.Html;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.example.parstagram.FeedActivity;
 import com.example.parstagram.R;
 import com.example.parstagram.model.Post;
 import com.parse.ParseFile;
@@ -29,6 +31,7 @@ import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,6 +50,8 @@ public class PostDetailsFragment extends Fragment {
     private TextView tvDLikes;
     private int likedPosition;
     private TextView tvDComments;
+    private String commentSource;
+    private ImageButton btnDComments;
     public static final String TAG = "DetailsFragment";
 
     @Override
@@ -72,6 +77,7 @@ public class PostDetailsFragment extends Fragment {
         tvTimeStamp = view.findViewById(R.id.tvTimeStamp);
         btnDHeart = view.findViewById(R.id.btnDHeart);
         tvDLikes = view.findViewById(R.id.tvDLikes);
+        btnDComments = view.findViewById(R.id.btnDComment);
         tvDComments = view.findViewById(R.id.tvDComments);
 
         btnDHeart.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +120,7 @@ public class PostDetailsFragment extends Fragment {
                 // update the textview with the number of likes
                 String sourceLikes = "<b>" + likes.length() + " likes </b>";
                 tvDLikes.setText(Html.fromHtml(sourceLikes));
+
             }
         });
 
@@ -129,6 +136,21 @@ public class PostDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 profileClick(post.getUser());
+            }
+        });
+
+        btnDComments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // launch the Comments Fragment
+                // cast the context of the parent activity
+                FeedActivity activity = (FeedActivity) getContext();
+                // start the fragment transaction
+                FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
+                // creating a new instance of the details fragment and passing the post as the attribute
+                CommentsFragment commentsFragment = CommentsFragment.newInstance(post);
+                // change the container to the details fragment and add commit
+                fragmentTransaction.replace(R.id.flContainer, commentsFragment).commit();
             }
         });
 
@@ -149,6 +171,23 @@ public class PostDetailsFragment extends Fragment {
             sourceString =  "<b>No likes</b>";
         }
         tvDLikes.setText(Html.fromHtml(sourceString));
+
+        // loading the comments if there are any
+        JSONObject comments = post.getComments();
+        if (comments.length() == 0) {
+            // no comments, so hide the Comment TextView
+            tvDComments.setVisibility(View.GONE);
+        } else {
+            tvDComments.setVisibility(View.VISIBLE);
+            for (int index = 0; index < comments.names().length(); index++) {
+                try {
+                    commentSource = "<b>" + comments.names().getString(index) + "</b> " + comments.getString(comments.names().getString(index)) +  "\n";
+                    tvDComments.setText(Html.fromHtml(commentSource));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         for (int index = 0; index < likedUsers.length(); index++) {
             try {
