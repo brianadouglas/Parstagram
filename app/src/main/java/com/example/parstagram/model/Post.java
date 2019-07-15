@@ -6,6 +6,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.json.JSONArray;
+
 @ParseClassName("Post")
 public class Post extends ParseObject {
     // extension of Parse object to make the fields easily accessible
@@ -14,6 +16,7 @@ public class Post extends ParseObject {
     public static final String KEY_IMAGE = "image";
     public static final String KEY_USER = "user";
     public static final String KEY_CREATED = "createdAt";
+    public static final String KEY_LIKES = "likes";
 
 
     public String getDescription() {
@@ -30,6 +33,21 @@ public class Post extends ParseObject {
 
     public void setImage(ParseFile image) {
         put(KEY_IMAGE, image);
+    }
+
+    // the likes field contains an array of the object ids of the users that have liked the post
+    public JSONArray getLikes() {
+        // prevents returning null in the case that the post doesn't have likes as yet
+        JSONArray likes =  getJSONArray(KEY_LIKES);
+        if (likes == null) {
+            return new JSONArray();
+        } else {
+            return likes;
+        }
+    }
+
+    public void setLikes(JSONArray newLikes) {
+        put(KEY_LIKES, newLikes);
     }
 
     public ParseUser getUser() {

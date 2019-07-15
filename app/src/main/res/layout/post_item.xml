@@ -77,12 +77,22 @@
         app:srcCompat="@drawable/ufi_save_icon" />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvLikes"
+        android:layout_below="@+id/btnHeart"
+        android:layout_alignLeft="@+id/btnHeart"
+        android:layout_marginBottom="5dp"
+        />
+
+    <TextView
         android:id="@+id/tvCaption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnHeart"
-        android:layout_alignLeft="@+id/btnHeart"
+        android:layout_below="@+id/tvLikes"
+        android:layout_alignLeft="@+id/tvLikes"
         android:layout_marginBottom="5dp" />
+
 
     <TextView
         android:id="@+id/tvTimeStampPost"

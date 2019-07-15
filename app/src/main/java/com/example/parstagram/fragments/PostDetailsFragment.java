@@ -1,17 +1,21 @@
 package com.example.parstagram.fragments;
 
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.text.Html;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,6 +25,10 @@ import com.example.parstagram.R;
 import com.example.parstagram.model.Post;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,6 +43,10 @@ public class PostDetailsFragment extends Fragment {
     private ImageView ivDPost;
     private TextView tvDCaption;
     private TextView tvTimeStamp;
+    private ImageButton btnDHeart;
+    private TextView tvDLikes;
+    private int likedPosition;
+    public static final String TAG = "DetailsFragment";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,6 +69,51 @@ public class PostDetailsFragment extends Fragment {
         ivDPost = view.findViewById(R.id.ivDPost);
         tvDCaption = view.findViewById(R.id.tvDCaption);
         tvTimeStamp = view.findViewById(R.id.tvTimeStamp);
+        btnDHeart = view.findViewById(R.id.btnDHeart);
+        tvDLikes = view.findViewById(R.id.tvDLikes);
+
+        btnDHeart.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View v) {
+                JSONArray likes = post.getLikes();
+                // check if the current user has liked the image - check if the button is currently enabled
+                if (btnDHeart.isPressed()) {
+                    // the current user has already liked the post and is now disliking it
+                    btnDHeart.setSelected(false);
+                    for (int index = 0; index < likes.length(); index ++) {
+                        try {
+                            if (likes.get(index) == ParseUser.getCurrentUser()) {
+                                // end search when the current user has been found
+                                likedPosition = index;
+                                break;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    // remove them from the list of likes that the post has
+                    likes.remove(likedPosition);
+                } else {
+                    btnDHeart.setSelected(true);
+                    likes.put(ParseUser.getCurrentUser());
+                }
+                post.setLikes(likes);
+                post.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(com.parse.ParseException e) {
+                        if (e == null) {
+                            Log.d(TAG, "Success with like button");
+                        } else {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                // update the textview with the number of likes
+                String sourceLikes = "<b>" + likes.length() + " likes </b>";
+                tvDLikes.setText(Html.fromHtml(sourceLikes));
+            }
+        });
 
         // on click listeners to get to the profile fragment
         ivDAvatar.setOnClickListener(new View.OnClickListener() {
@@ -73,6 +130,8 @@ public class PostDetailsFragment extends Fragment {
             }
         });
 
+        JSONArray likedUsers = post.getLikes();
+
         // populate the views according to this data
         String username = post.getUser().getUsername();
         tvDUsername.setText(username);
@@ -80,6 +139,27 @@ public class PostDetailsFragment extends Fragment {
         // caption configured so that username is in bold typeface
         String sourceString = "<b>" + username + "</b>  " + post.getDescription();
         tvDCaption.setText(Html.fromHtml(sourceString));
+
+        // setting the number of likes
+        if (likedUsers != null) {
+            sourceString = "<b>" + likedUsers.length() + " likes </b>";
+        } else {
+            sourceString =  "<b>No likes</b>";
+        }
+        tvDLikes.setText(Html.fromHtml(sourceString));
+
+        btnDHeart.setSelected(false);
+        for (int index = 0; index < likedUsers.length(); index++) {
+            try {
+                if (likedUsers.get(index) == ParseUser.getCurrentUser().getObjectId()) {
+                    // the like button shows up red if the user's id can be found in the array of likes
+                    btnDHeart.setSelected(true);
+                    break;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         // check if the user has a profilePicture on their account
         ParseFile profile = post.getUser().getParseFile("profilePicture");

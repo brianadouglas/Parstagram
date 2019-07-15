@@ -78,11 +78,20 @@
         app:srcCompat="@drawable/ufi_save_icon" />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvDLikes"
+        android:layout_below="@+id/btnDHeart"
+        android:layout_alignLeft="@+id/btnDHeart"
+        android:layout_marginBottom="5dp"
+        />
+
+    <TextView
         android:id="@+id/tvDCaption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnDHeart"
-        android:layout_alignLeft="@+id/btnDHeart"
+        android:layout_below="@+id/tvDLikes"
+        android:layout_alignLeft="@+id/tvDLikes"
         android:layout_marginBottom="5dp" />
 
     <TextView
