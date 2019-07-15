@@ -78,12 +78,12 @@ public class PostDetailsFragment extends Fragment {
             public void onClick(View v) {
                 JSONArray likes = post.getLikes();
                 // check if the current user has liked the image - check if the button is currently enabled
-                if (btnDHeart.isPressed()) {
+                if (btnDHeart.isSelected()) {
                     // the current user has already liked the post and is now disliking it
                     btnDHeart.setSelected(false);
                     for (int index = 0; index < likes.length(); index ++) {
                         try {
-                            if (likes.get(index) == ParseUser.getCurrentUser()) {
+                            if (likes.getString(index).equals(ParseUser.getCurrentUser().getObjectId())) {
                                 // end search when the current user has been found
                                 likedPosition = index;
                                 break;
@@ -96,7 +96,7 @@ public class PostDetailsFragment extends Fragment {
                     likes.remove(likedPosition);
                 } else {
                     btnDHeart.setSelected(true);
-                    likes.put(ParseUser.getCurrentUser());
+                    likes.put(ParseUser.getCurrentUser().getObjectId());
                 }
                 post.setLikes(likes);
                 post.saveInBackground(new SaveCallback() {
@@ -148,10 +148,9 @@ public class PostDetailsFragment extends Fragment {
         }
         tvDLikes.setText(Html.fromHtml(sourceString));
 
-        btnDHeart.setSelected(false);
         for (int index = 0; index < likedUsers.length(); index++) {
             try {
-                if (likedUsers.get(index) == ParseUser.getCurrentUser().getObjectId()) {
+                if (likedUsers.getString(index).equals(ParseUser.getCurrentUser().getObjectId())) {
                     // the like button shows up red if the user's id can be found in the array of likes
                     btnDHeart.setSelected(true);
                     break;

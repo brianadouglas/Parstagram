@@ -1,5 +1,8 @@
 package com.example.parstagram.model;
 
+import android.util.Log;
+
+import com.example.parstagram.PostsAdapter;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -39,9 +42,11 @@ public class Post extends ParseObject {
     public JSONArray getLikes() {
         // prevents returning null in the case that the post doesn't have likes as yet
         JSONArray likes =  getJSONArray(KEY_LIKES);
+        Log.d(PostsAdapter.TAG, String.format("%s", likes));
         if (likes == null) {
             return new JSONArray();
         } else {
+            Log.d(PostsAdapter.TAG, "Returning likes array");
             return likes;
         }
     }
@@ -73,6 +78,12 @@ public class Post extends ParseObject {
         public Query withUser() {
             // ensures that the query returns the associated user
             include("user");
+            return this;
+        }
+
+        // to ensure that the Likes are returned with the post
+        public Query withLikes() {
+            include("likes");
             return this;
         }
     }

@@ -104,11 +104,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         holder.tvTimeStampPost.setText(getRelativeTimeAgo(post.getCreatedAt().toString()));
 
         // reflect whether or not the current user has liked the post
-
-        holder.btnHeart.setSelected(false);
-        for (int index = 0; index < likedUsers.length(); index++) {
+        assert likedUsers != null;
+        for (int index = 0; index < likedUsers.length()+1; index++) {
             try {
-                if (likedUsers.get(index) == ParseUser.getCurrentUser().getObjectId()) {
+                if (likedUsers.getString(index).equals(ParseUser.getCurrentUser().getObjectId())) {
                     // the like button shows up red if the user's id can be found in the array of likes
                     holder.btnHeart.setSelected(true);
                     break;
@@ -194,7 +193,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                             btnHeart.setSelected(false);
                             for (int index = 0; index < likes.length(); index ++) {
                                 try {
-                                    if (likes.get(index) == ParseUser.getCurrentUser().getObjectId()) {
+                                    if (likes.getString(index).equals(ParseUser.getCurrentUser().getObjectId())) {
                                         // end search when the current user has been found
                                         likedPosition = index;
                                         break;
