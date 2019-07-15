@@ -93,11 +93,18 @@
         android:layout_alignLeft="@+id/tvLikes"
         android:layout_marginBottom="5dp" />
 
+    <TextView
+        android:id="@+id/tvComments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvCaption"
+        android:layout_alignLeft="@+id/tvCaption"
+        android:layout_marginBottom="5dp" />
 
     <TextView
         android:id="@+id/tvTimeStampPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvCaption"
-        android:layout_alignLeft="@id/tvCaption" />
+        android:layout_below="@+id/tvComments"
+        android:layout_alignLeft="@id/tvComments" />
 </RelativeLayout>

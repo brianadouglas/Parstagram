@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.example.parstagram.fragments.CommentsFragment;
 import com.example.parstagram.fragments.PostDetailsFragment;
 import com.example.parstagram.fragments.ProfileFragment;
 import com.example.parstagram.model.Post;
@@ -30,6 +31,7 @@ import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,6 +44,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     Context context;
     int likedPosition; // denotes the position of the post to be disliked
     public static final String TAG = "PostsFragment";
+    String commentSource; // HTML string to represent each comment
 
     // pass in the posts array in the constructor
     public PostsAdapter(Context context, List<Post> posts) {
@@ -117,6 +120,23 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             }
         }
 
+        // loading the comments if there are any
+        JSONObject comments = post.getComments();
+        if (comments.length() == 0) {
+            // no comments, so hide the Comment TextView
+            holder.tvComments.setVisibility(View.GONE);
+        } else {
+            holder.tvComments.setVisibility(View.VISIBLE);
+            for (int index = 0; index < comments.names().length(); index++) {
+                try {
+                    commentSource = "<b>" + comments.names().getString(index) + "<b> " + comments.getString(comments.names().getString(index));
+                    holder.tvComments.setText(commentSource);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
 
     }
 
@@ -164,6 +184,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         TextView tvTimeStampPost;
         ImageButton btnHeart;
         TextView tvLikes;
+        TextView tvComments;
+        ImageButton btnComment;
 
 
         public ViewHolder(View itemView) {
@@ -177,6 +199,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             tvTimeStampPost = (TextView) itemView.findViewById(R.id.tvTimeStampPost);
             btnHeart = (ImageButton) itemView.findViewById(R.id.btnHeart);
             tvLikes = (TextView) itemView.findViewById(R.id.tvLikes);
+            btnComment = (ImageButton) itemView.findViewById(R.id.btnComment);
+            tvComments = (TextView) itemView.findViewById(R.id.tvComments);
             itemView.setOnClickListener(this);
 
             btnHeart.setOnClickListener(new View.OnClickListener() {
@@ -239,6 +263,24 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 }
             });
 
+            btnComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // launch the Comments Fragment
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        Post post = mPosts.get(position);
+                        // cast the context of the parent activity
+                        FeedActivity activity = (FeedActivity) context;
+                        // start the fragment transaction
+                        FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
+                        // creating a new instance of the details fragment and passing the post as the attribute
+                        CommentsFragment commentsFragment = CommentsFragment.newInstance(post);
+                        // change the container to the details fragment and add commit
+                        fragmentTransaction.replace(R.id.flContainer, commentsFragment).commit();
+                    }
+                }
+            });
         }
 
         @Override

@@ -131,6 +131,8 @@ public class ProfileFragment extends Fragment {
         postQuery.include(Post.KEY_USER);
         postQuery.setLimit(20); // returns only the first 20 posts
         // to filter the posts to show only those made by the signed-in user
+        postQuery.include(Post.KEY_LIKES);
+        postQuery.include(Post.KEY_COMMENTS);
         postQuery.whereEqualTo(Post.KEY_USER, user);
         postQuery.addDescendingOrder(Post.KEY_CREATED); // order chronologically
         postQuery.findInBackground(new FindCallback<Post>() {

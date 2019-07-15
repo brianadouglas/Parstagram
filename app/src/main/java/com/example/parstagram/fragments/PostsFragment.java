@@ -99,6 +99,7 @@ public class PostsFragment extends Fragment {
         ParseQuery<Post> postQuery = new ParseQuery<Post>(Post.class);
         postQuery.include(Post.KEY_USER);
         postQuery.include(Post.KEY_LIKES);
+        postQuery.include(Post.KEY_COMMENTS);
         postQuery.setLimit(20); // returns only the first 20 posts
         postQuery.addDescendingOrder(Post.KEY_CREATED); // order chronologically
         postQuery.findInBackground(new FindCallback<Post>() {

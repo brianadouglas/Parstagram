@@ -1,8 +1,5 @@
 package com.example.parstagram.model;
 
-import android.util.Log;
-
-import com.example.parstagram.PostsAdapter;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -10,6 +7,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 @ParseClassName("Post")
 public class Post extends ParseObject {
@@ -20,6 +18,7 @@ public class Post extends ParseObject {
     public static final String KEY_USER = "user";
     public static final String KEY_CREATED = "createdAt";
     public static final String KEY_LIKES = "likes";
+    public static final String KEY_COMMENTS = "comments";
 
 
     public String getDescription() {
@@ -42,17 +41,28 @@ public class Post extends ParseObject {
     public JSONArray getLikes() {
         // prevents returning null in the case that the post doesn't have likes as yet
         JSONArray likes =  getJSONArray(KEY_LIKES);
-        Log.d(PostsAdapter.TAG, String.format("%s", likes));
         if (likes == null) {
             return new JSONArray();
         } else {
-            Log.d(PostsAdapter.TAG, "Returning likes array");
             return likes;
         }
     }
 
     public void setLikes(JSONArray newLikes) {
         put(KEY_LIKES, newLikes);
+    }
+
+    public JSONObject getComments() {
+        JSONObject comments = getJSONObject(KEY_COMMENTS);
+        if (comments == null) {
+            return new JSONObject();
+        } else {
+            return comments;
+        }
+    }
+
+    public void setComments(JSONObject comments) {
+        put(KEY_COMMENTS, comments);
     }
 
     public ParseUser getUser() {

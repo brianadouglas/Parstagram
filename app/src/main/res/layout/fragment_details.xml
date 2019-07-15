@@ -95,9 +95,17 @@
         android:layout_marginBottom="5dp" />
 
     <TextView
-        android:id="@+id/tvTimeStamp"
+        android:id="@+id/tvDComments"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvDCaption"
-        android:layout_alignLeft="@id/tvDCaption" />
+        android:layout_alignLeft="@+id/tvDCaption"
+        android:layout_marginBottom="5dp" />
+
+    <TextView
+        android:id="@+id/tvTimeStamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvDComments"
+        android:layout_alignLeft="@id/tvDComments" />
 </RelativeLayout>

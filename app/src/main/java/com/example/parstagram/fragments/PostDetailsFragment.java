@@ -46,6 +46,7 @@ public class PostDetailsFragment extends Fragment {
     private ImageButton btnDHeart;
     private TextView tvDLikes;
     private int likedPosition;
+    private TextView tvDComments;
     public static final String TAG = "DetailsFragment";
 
     @Override
@@ -71,6 +72,7 @@ public class PostDetailsFragment extends Fragment {
         tvTimeStamp = view.findViewById(R.id.tvTimeStamp);
         btnDHeart = view.findViewById(R.id.btnDHeart);
         tvDLikes = view.findViewById(R.id.tvDLikes);
+        tvDComments = view.findViewById(R.id.tvDComments);
 
         btnDHeart.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
